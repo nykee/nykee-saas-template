@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-const files = ['en', 'zh'].map(
+const files = ['en', 'zh', 'es'].map(
   (locale) => `project.inlang/messages/${locale}.json`
 );
 const [base, translated] = await Promise.all(

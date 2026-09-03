@@ -1,8 +1,9 @@
 import * as m from '@/locale/paraglide/messages';
 
-export type AppLocale = 'en' | 'zh';
+export type AppLocale = 'en' | 'zh' | 'es';
+export type MessageKey = keyof typeof m;
 
-export function message(key: keyof typeof m, locale: AppLocale): string {
+export function message(key: MessageKey, locale: AppLocale): string {
   const value = m[key];
   if (typeof value !== 'function') {
     return key;
@@ -11,10 +12,12 @@ export function message(key: keyof typeof m, locale: AppLocale): string {
 }
 
 export function localizedPath(locale: AppLocale, hash = '') {
-  return `${locale === 'zh' ? '/zh' : '/'}${hash}`;
+  const prefix = locale === 'zh' ? '/zh' : locale === 'es' ? '/es' : '/';
+  return `${prefix}${hash}`;
 }
 
 export const localeMeta = {
   en: { hreflang: 'en', label: 'EN', messageKey: 'language_english' },
   zh: { hreflang: 'zh-CN', label: '中', messageKey: 'language_chinese' },
+  es: { hreflang: 'es', label: 'ES', messageKey: 'language_spanish' },
 } as const;

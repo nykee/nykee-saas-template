@@ -8,7 +8,12 @@ import {
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { websiteConfig } from '@/config/website';
-import { type AppLocale, localeMeta, message } from '@/lib/locale';
+import {
+  type AppLocale,
+  localeMeta,
+  localizedPath,
+  message,
+} from '@/lib/locale';
 import appCss from '@/styles.css?url';
 
 export const Route = createRootRoute({
@@ -34,7 +39,13 @@ export const Route = createRootRoute({
 });
 
 function currentLocale(pathname: string): AppLocale {
-  return pathname === '/zh' || pathname.startsWith('/zh/') ? 'zh' : 'en';
+  if (pathname === '/zh' || pathname.startsWith('/zh/')) {
+    return 'zh';
+  }
+  if (pathname === '/es' || pathname.startsWith('/es/')) {
+    return 'es';
+  }
+  return 'en';
 }
 
 function RootLayout() {
@@ -85,7 +96,7 @@ function NotFound() {
         </p>
         <a
           className="mt-8 rounded-lg border-2 border-ink bg-yellow px-5 py-3 font-black text-ink shadow-brutal"
-          href={locale === 'zh' ? '/zh' : '/'}
+          href={localizedPath(locale)}
         >
           {message('not_found_action', locale)}
         </a>

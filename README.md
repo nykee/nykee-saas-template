@@ -7,7 +7,7 @@ TanStarter Cloud is a reusable TanStack Start product starter for Cloudflare. It
 - Pancake hosted checkout and verified webhook ingestion
 - Responsive account dashboard and administrator workspace
 - Workers, D1, KV, R2, Queues, Durable Objects, Workers AI, and Analytics Engine bindings
-- English and Simplified Chinese public-site copy, SEO endpoints, themes, tests, and one-command deployment
+- English, Simplified Chinese, and Spanish public-site copy, SEO endpoints, themes, tests, and one-command deployment
 
 The template intentionally leaves credentials, Cloudflare resource IDs, product IDs, and merchant keys as deployment configuration. It does not commit an account ID, custom domain, or secret.
 
@@ -106,14 +106,66 @@ The browser cannot submit a product ID, amount, merchant ID, or private key. Upd
 
 - `/` — English public landing page
 - `/zh` — Simplified Chinese public landing page
+- `/es` — Spanish public landing page
 - `/login` — Google OAuth and Google One Tap sign-in
 - `/dashboard` — authenticated account and billing dashboard
 - `/admin` — administrator metrics and access management
 - `/api/auth/*` — Better Auth protocol and OAuth callbacks
 - `/api/webhooks/pancake` — verified Pancake webhook endpoint
-- `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest` — machine-readable public endpoints
+- `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/manifest.webmanifest` — machine-readable public endpoints
 
 The administrator role is `admin`; new users default to `user`. An administrator can change roles or ban users from `/admin`. Every accepted access change is recorded in `audit_log`. The server guards every private loader and mutation independently of client-side route redirects.
+
+## SEO topic clusters and GEO
+
+SEO and GEO are configuration-driven infrastructure in
+`src/config/seo.ts`. Keep every public route in `seoConfig.pages`; private
+routes are intentionally excluded. A page can then participate in a
+hub-and-spoke cluster without duplicating metadata or link markup:
+
+```ts
+{
+  id: 'cloudflare-guide',
+  path: '/guides/cloudflare',
+  locale: 'en',
+  title: { en: 'Cloudflare guide' },
+  description: { en: 'A practical Cloudflare guide for SaaS builders.' },
+  kind: 'pillar',
+  primaryKeyword: 'Cloudflare guide',
+}
+```
+
+Add the page IDs to `seoConfig.clusters` as one `pillarId` and its
+`spokeIds`. The infrastructure generates mandatory pillar-to-spoke and
+spoke-to-pillar links. Add deliberate spoke-to-spoke or cross-cluster links to
+`seoConfig.internalLinks`; it does not infer topical relationships from text.
+Use `<Breadcrumbs pageId="..." />` and
+`<InternalLinkCluster pageId="..." />` in the corresponding route. Both use
+the same registry as the sitemap and JSON-LD, so labels and URLs stay aligned.
+
+The generic `pageHead()` helper emits canonical URLs, hreflang alternates,
+Open Graph/Twitter metadata, Organization/WebSite/WebPage JSON-LD, Article
+JSON-LD for content pages, and BreadcrumbList JSON-LD. Use `buildFaqJsonLd()`
+only when the same questions and answers are visibly rendered on the page.
+
+GEO foundations are enabled by default:
+
+- `/llms.txt` publishes a server-rendered brief from the public page registry,
+  topic clusters, key facts, and content guidance.
+- `/robots.txt` allows AI search crawlers such as GPTBot, OAI-SearchBot,
+  ClaudeBot, and PerplexityBot, while blocking common training crawlers. Edit
+  `seoConfig.geo` when your publishing policy changes.
+- `GeoAnswerBlock` provides a server-rendered, self-contained answer unit with
+  first-party source links. Keep important answers direct, use question-based
+  headings, and target roughly 134–167 words when the passage is intended for
+  citation.
+- `seoConfig.organization.sameAs` is the single place to add official
+  LinkedIn, GitHub, YouTube, Wikipedia, or other entity profiles.
+
+The generated sitemap and `llms.txt` include only pages with `indexable !==
+false`. This makes adding a public content route a deliberate three-part
+change: register its metadata, add its route, then add it to a cluster if it
+belongs to one.
 
 ## Commands
 
@@ -124,7 +176,7 @@ The administrator role is `admin`; new users default to `user`. An administrator
 | `pnpm build` | Build client/Worker output and type-check |
 | `pnpm e2e` | Run Playwright acceptance tests |
 | `pnpm locale:compile` | Regenerate Paraglide output after copy changes |
-| `pnpm locale:check` | Check English/Chinese message-key parity |
+| `pnpm locale:check` | Check English/Chinese/Spanish message-key parity |
 | `pnpm db:generate` | Generate a D1 migration from `src/db/schema.ts` |
 | `pnpm db:migrate:local` | Apply migrations to local D1 |
 | `pnpm db:migrate:remote` | Apply migrations to remote D1 |
@@ -134,7 +186,7 @@ The administrator role is `admin`; new users default to `user`. An administrator
 ## Customize
 
 1. Update site identity and navigation in `src/config/website.ts`.
-2. Update English and Chinese copy in `project.inlang/messages/en.json` and `project.inlang/messages/zh.json`, then run `pnpm locale:compile`.
+2. Update English, Chinese, and Spanish copy in `project.inlang/messages/en.json`, `project.inlang/messages/zh.json`, and `project.inlang/messages/es.json`, then run `pnpm locale:compile`.
 3. Replace `public/favicon.svg` and `public/og.png` with your brand assets.
 4. Set the Pancake product variables for the product this site sells.
 5. Add product-specific tables and server functions beside the existing shared data services.
@@ -147,8 +199,10 @@ The administrator role is `admin`; new users default to `user`. An administrator
 - `src/routes/` — public, authenticated, admin, auth, and webhook routes
 - `src/components/app/` — shared authenticated shell, metrics, status badges, and empty states
 - `src/components/layout/` — public header, footer, language, and theme controls
+- `src/components/seo/` — reusable breadcrumbs, internal-link clusters, and GEO answer blocks
 - `src/lib/client/` — browser-only auth client with One Tap
 - `src/lib/server/` — Cloudflare bindings, Better Auth, D1, billing, queue projections, and server functions
+- `src/config/seo.ts` and `src/lib/seo.ts` — public page registry, topic clusters, metadata, sitemap, robots, and GEO generators
 - `src/db/schema.ts` — Better Auth and application D1 schema
 - `drizzle/` — generated D1 migrations
 - `wrangler.jsonc` — Cloudflare resource declarations and workers.dev deployment default

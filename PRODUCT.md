@@ -38,13 +38,16 @@ and administration each have a typed boundary.
 
 ## Capabilities and Constraints
 
-- Human-facing routes are `/` in English and `/zh` in Simplified Chinese.
+- Human-facing routes are `/` in English, `/zh` in Simplified Chinese, and
+  `/es` in Spanish.
 - The site supports light, dark, and system themes.
 - The landing page includes navigation, product positioning, capabilities,
   stack, included and excluded scope, a four-step customization workflow, FAQ,
   and CTA.
 - SEO includes canonical and alternate locale links, social metadata,
-  structured data, sitemap, robots, and a web manifest.
+  structured data, sitemap, robots, llms.txt, and a web manifest. A central
+  registry supports hub-and-spoke topic clusters, breadcrumbs, and explicit
+  internal-link matrices.
 - The default deployment uses the account's `workers.dev` subdomain.
 - Cloudflare bindings cover Workers, D1, KV, R2, Queues, Durable Objects,
   Workers AI, and Analytics Engine.
@@ -54,6 +57,8 @@ and administration each have a typed boundary.
   webhooks are idempotently projected through a Queue into D1.
 - The application surface includes `/login`, `/dashboard`, `/admin`, and the
   auth/webhook API routes.
+- GEO foundations include AI crawler policy, an AI-readable `llms.txt` brief,
+  entity JSON-LD, and server-rendered citable answer blocks with source links.
 - Credentials and account-specific resource IDs remain deployment inputs.
 
 ## Brand Commitments

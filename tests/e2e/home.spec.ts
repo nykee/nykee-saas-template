@@ -14,6 +14,10 @@ test.describe('simple landing page', () => {
       'href',
       new URL('/zh', page.url()).toString()
     );
+    await expect(page.locator('link[hreflang="es"]')).toHaveAttribute(
+      'href',
+      new URL('/es', page.url()).toString()
+    );
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       'content',
       new URL('/', page.url()).toString()
@@ -34,6 +38,17 @@ test.describe('simple landing page', () => {
   test('renders Simplified Chinese at /zh', async ({ page }) => {
     await page.goto('/zh');
     await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+    await expect(page.locator('header nav')).toBeVisible();
+    await expect(page.locator('main h1')).toBeVisible();
+    await expect(page.locator('#stack')).toBeVisible();
+    await expect(page.locator('#structure')).toBeVisible();
+    await expect(page.locator('#template')).toBeVisible();
+    await expect(page.locator('#faq')).toBeVisible();
+  });
+
+  test('renders Spanish at /es', async ({ page }) => {
+    await page.goto('/es');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
     await expect(page.locator('header nav')).toBeVisible();
     await expect(page.locator('main h1')).toBeVisible();
     await expect(page.locator('#stack')).toBeVisible();
@@ -63,6 +78,7 @@ test.describe('simple landing page', () => {
     await page.locator('[data-slot="language-switcher-trigger"]').click();
     const chineseLanguage = page.locator('[data-locale="zh"]');
     await expect(chineseLanguage).toBeVisible();
+    await expect(page.locator('[data-locale="es"]')).toBeVisible();
     await chineseLanguage.click();
 
     await expect(page).toHaveURL(/\/zh#faq$/);
@@ -124,6 +140,7 @@ test.describe('simple landing page', () => {
       '/blog',
       '/contact',
       '/zh/login',
+      '/es/login',
     ]) {
       const response = await page.goto(path);
       expect(response?.status(), path).toBe(404);
@@ -148,7 +165,19 @@ test.describe('simple landing page', () => {
     const paths = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
       ([, url]) => new URL(url).pathname
     );
-    expect(paths).toEqual(['/', '/zh']);
+    expect(paths).toEqual(['/', '/zh', '/es']);
+
+    const llms = await request.get('/llms.txt');
+    expect(llms.ok()).toBe(true);
+    const llmsText = await llms.text();
+    expect(llmsText).toContain('# TanStarter Cloud');
+    expect(llmsText).toContain('## Public pages');
+    expect(llmsText).not.toContain('/dashboard');
+
+    const robotsText = await robots.text();
+    expect(robotsText).toContain('User-agent: GPTBot');
+    expect(robotsText).toContain('User-agent: CCBot');
+    expect(robotsText).toContain('Disallow: /');
 
     const manifest = await request.get('/manifest.webmanifest');
     expect(manifest.ok()).toBe(true);

@@ -64,7 +64,7 @@ export function LanguageSwitcher({ locale }: { locale: AppLocale }) {
         <IconLanguage aria-hidden="true" className="size-5" stroke={2.4} />
       </DropdownMenuTrigger>
       <DropdownMenuContent aria-label={message('language_label', locale)}>
-        {(['en', 'zh'] as const).map((option) => {
+        {(['en', 'zh', 'es'] as const).map((option) => {
           const current = option === locale;
           return (
             <DropdownMenuLinkItem
