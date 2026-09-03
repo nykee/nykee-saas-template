@@ -1,0 +1,15 @@
+# Copy this file to .dev.vars for `wrangler dev` and replace every value.
+# Never commit .dev.vars or real credentials.
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=replace-with-at-least-32-random-characters
+GOOGLE_CLIENT_ID=replace-with-google-oauth-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=replace-with-google-oauth-client-secret
+
+# Pancake is the default payment provider for this template.
+PANCAKE_MERCHANT_ID=replace-with-pancake-merchant-id
+PANCAKE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nreplace-with-pancake-rsa-private-key\n-----END PRIVATE KEY-----"
+PANCAKE_PRODUCT_ID=replace-with-pancake-product-id
+PANCAKE_CURRENCY=USD
+PANCAKE_ENVIRONMENT=test
+PANCAKE_WEBHOOK_PUBLIC_KEY_TEST="-----BEGIN PUBLIC KEY-----\nreplace-with-pancake-test-webhook-public-key\n-----END PUBLIC KEY-----"
+PANCAKE_WEBHOOK_PUBLIC_KEY_PROD="-----BEGIN PUBLIC KEY-----\nreplace-with-pancake-production-webhook-public-key\n-----END PUBLIC KEY-----"

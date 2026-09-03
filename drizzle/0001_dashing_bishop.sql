@@ -1,0 +1,2 @@
+DROP INDEX `pancake_webhook_event_external_id_unique`;--> statement-breakpoint
+CREATE UNIQUE INDEX `pancake_webhook_event_type_external_id_unique` ON `pancake_webhook_event` (`event_type`,`external_event_id`);

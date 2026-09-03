@@ -1,0 +1,76 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tanstarter-cloud",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "vars": {
+    "PANCAKE_ENVIRONMENT": "test",
+    "PANCAKE_CURRENCY": "USD"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tanstarter-cloud-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "00000000000000000000000000000000"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "UPLOADS",
+      "bucket_name": "tanstarter-cloud-uploads"
+    }
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "APP_EVENTS",
+        "queue": "tanstarter-cloud-events"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "tanstarter-cloud-events",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "dead_letter_queue": "tanstarter-cloud-events-dlq"
+      }
+    ]
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "APP_COORDINATOR",
+        "class_name": "AppCoordinator"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["AppCoordinator"]
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "analytics_engine_datasets": [
+    {
+      "binding": "ANALYTICS",
+      "dataset": "tanstarter_lite_events"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true
+}
