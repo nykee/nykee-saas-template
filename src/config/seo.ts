@@ -1,4 +1,10 @@
-import type { AppLocale, MessageKey } from '@/lib/locale';
+import { type AppLocale, appLocales, type MessageKey } from '@/lib/locale';
+import {
+  staticPageDefinitions,
+  staticPageKinds,
+  staticPagePath,
+  staticPageSeoId,
+} from './static-pages';
 import { websiteConfig } from './website';
 
 /**
@@ -163,6 +169,27 @@ export const seoConfig: SeoInfrastructureConfig = {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    ...staticPageKinds.flatMap((page) => {
+      const definition = staticPageDefinitions[page];
+
+      return appLocales.map(
+        (locale): SeoPageDefinition => ({
+          id: staticPageSeoId(page, locale),
+          path: staticPagePath(page, locale),
+          locale,
+          title: { messageKey: definition.metaTitleKey },
+          description: { messageKey: definition.metaDescriptionKey },
+          kind: 'support',
+          alternateId: page,
+          primaryKeyword: { messageKey: definition.navLabelKey },
+          breadcrumbIds: [`home-${locale}`],
+          imageAlt: { messageKey: 'social_image_alt' },
+          indexable: true,
+          changeFrequency: 'monthly',
+          priority: definition.priority,
+        })
+      );
+    }),
   ],
   /**
    * Keep this empty until real pillar and spoke routes exist. The example in

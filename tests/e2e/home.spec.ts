@@ -57,6 +57,30 @@ test.describe('simple landing page', () => {
     await expect(page.locator('#faq')).toBeVisible();
   });
 
+  test('renders generic public static pages', async ({ page }) => {
+    for (const path of [
+      '/about',
+      '/privacy',
+      '/terms',
+      '/es/about',
+      '/es/privacy',
+      '/es/terms',
+      '/fr/about',
+      '/fr/privacy',
+      '/fr/terms',
+    ]) {
+      await page.goto(path);
+      await expect(page.locator('main h1')).toBeVisible();
+      await expect(
+        page.locator('footer a[href="mailto:support@xx.com"]')
+      ).toBeVisible();
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        new URL(path, page.url()).toString()
+      );
+    }
+  });
+
   test('switches and persists theme', async ({ page }) => {
     await page.goto('/');
     const theme = page.locator('[data-slot="theme-switcher-trigger"]');
@@ -165,7 +189,20 @@ test.describe('simple landing page', () => {
     const paths = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
       ([, url]) => new URL(url).pathname
     );
-    expect(paths).toEqual(['/', '/es', '/fr']);
+    expect(paths).toEqual([
+      '/',
+      '/es',
+      '/fr',
+      '/about',
+      '/es/about',
+      '/fr/about',
+      '/privacy',
+      '/es/privacy',
+      '/fr/privacy',
+      '/terms',
+      '/es/terms',
+      '/fr/terms',
+    ]);
 
     const llms = await request.get('/llms.txt');
     expect(llms.ok()).toBe(true);

@@ -3,6 +3,9 @@ export const websiteConfig = {
   description: 'A reusable full-stack product starter for Cloudflare Workers.',
   url: null as string | null,
   repository: 'https://github.com/MkFastHQ/mkfast-lite',
+  // Downstream projects replace this single value to update every support
+  // contact link rendered by the public site.
+  supportEmail: 'support@xx.com',
   defaultTheme: 'system' as const,
   themeStorageKey: 'tanstarter-cloud-theme',
   colors: {

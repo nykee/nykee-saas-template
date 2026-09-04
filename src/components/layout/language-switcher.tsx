@@ -8,8 +8,10 @@ import {
   DropdownMenuLinkItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { getStaticPageKindByPath, staticPagePath } from '@/config/static-pages';
 import {
   type AppLocale,
+  appLocales,
   localeMeta,
   localizedPath,
   message,
@@ -32,6 +34,7 @@ export function LanguageSwitcher({ locale }: { locale: AppLocale }) {
     location.hash,
     '#'
   )}`;
+  const currentStaticPage = getStaticPageKindByPath(location.pathname);
   const activeLabel = message(localeMeta[locale].messageKey, locale);
   const controlLabel = `${message('language_label', locale)}: ${activeLabel}`;
 
@@ -64,13 +67,17 @@ export function LanguageSwitcher({ locale }: { locale: AppLocale }) {
         <IconLanguage aria-hidden="true" className="size-5" stroke={2.4} />
       </DropdownMenuTrigger>
       <DropdownMenuContent aria-label={message('language_label', locale)}>
-        {(['en', 'es', 'fr'] as const).map((option) => {
+        {appLocales.map((option) => {
           const current = option === locale;
+          const path = currentStaticPage
+            ? staticPagePath(currentStaticPage, option)
+            : localizedPath(option);
+
           return (
             <DropdownMenuLinkItem
               key={option}
               data-locale={option}
-              href={`${localizedPath(option)}${suffix}`}
+              href={`${path}${suffix}`}
               aria-current={current ? 'page' : undefined}
             >
               <span className="w-7 text-xs font-black uppercase">

@@ -1,4 +1,5 @@
 import { Container } from '@/components/layout/container';
+import { PublicPageLinks } from '@/components/layout/public-page-links';
 import { Logo } from '@/components/shared/logo';
 import { websiteConfig } from '@/config/website';
 import { type AppLocale, message } from '@/lib/locale';
@@ -16,11 +17,21 @@ export function Footer({ locale }: { locale: AppLocale }) {
             {message('footer_tagline', locale)}
           </p>
         </div>
-        <p className="border-t-2 border-ink/20 pt-5 text-sm text-muted-foreground sm:border-t-0 sm:pt-0 sm:text-right">
-          © {websiteConfig.name} {new Date().getFullYear()}
-          {'. '}
-          {message('footer_rights', locale)}
-        </p>
+        <div className="grid gap-4 border-t-2 border-ink/20 pt-5 sm:border-t-0 sm:pt-0 sm:text-right">
+          <PublicPageLinks locale={locale} listClassName="sm:justify-end" />
+          <a
+            href={`mailto:${websiteConfig.supportEmail}`}
+            className="text-sm font-bold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            aria-label={`${message('footer_support_email_label', locale)}: ${websiteConfig.supportEmail}`}
+          >
+            {websiteConfig.supportEmail}
+          </a>
+          <p className="text-sm text-muted-foreground">
+            © {websiteConfig.name} {new Date().getFullYear()}
+            {'. '}
+            {message('footer_rights', locale)}
+          </p>
+        </div>
       </Container>
     </footer>
   );

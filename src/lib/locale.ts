@@ -1,6 +1,8 @@
 import * as m from '@/locale/paraglide/messages';
 
-export type AppLocale = 'en' | 'es' | 'fr';
+export const appLocales = ['en', 'es', 'fr'] as const;
+
+export type AppLocale = (typeof appLocales)[number];
 export type MessageKey = keyof typeof m;
 
 export function message(key: MessageKey, locale: AppLocale): string {

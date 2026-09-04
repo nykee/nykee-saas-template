@@ -16,11 +16,12 @@ describe('TanStarter Cloud core contracts', () => {
     expect(localeMeta.fr.hreflang).toBe('fr');
   });
 
-  it('keeps the repository as the only external destination', () => {
+  it('keeps template-level public destinations centralized', () => {
     expect(websiteConfig.name).toBe('TanStarter Cloud');
     expect(websiteConfig.repository).toBe(
       'https://github.com/MkFastHQ/mkfast-lite'
     );
+    expect(websiteConfig.supportEmail).toBe('support@xx.com');
     expect(websiteConfig.themeStorageKey).toBeTruthy();
     expect(websiteConfig.manifest.startUrl).toBe('/');
   });

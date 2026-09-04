@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as EsRouteImport } from './routes/es'
@@ -17,14 +18,27 @@ import { Route as FrRouteImport } from './routes/fr'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as EsAboutRouteImport } from './routes/es_.about'
+import { Route as EsPrivacyRouteImport } from './routes/es_.privacy'
+import { Route as EsTermsRouteImport } from './routes/es_.terms'
+import { Route as FrAboutRouteImport } from './routes/fr_.about'
+import { Route as FrPrivacyRouteImport } from './routes/fr_.privacy'
+import { Route as FrTermsRouteImport } from './routes/fr_.terms'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiWebhooksPancakeRouteImport } from './routes/api/webhooks/pancake'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -62,6 +76,11 @@ const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
   path: '/manifest.webmanifest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
@@ -70,6 +89,41 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsAboutRoute = EsAboutRouteImport.update({
+  id: '/es_/about',
+  path: '/es/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsPrivacyRoute = EsPrivacyRouteImport.update({
+  id: '/es_/privacy',
+  path: '/es/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsTermsRoute = EsTermsRouteImport.update({
+  id: '/es_/terms',
+  path: '/es/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrAboutRoute = FrAboutRouteImport.update({
+  id: '/fr_/about',
+  path: '/fr/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrPrivacyRoute = FrPrivacyRouteImport.update({
+  id: '/fr_/privacy',
+  path: '/fr/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrTermsRoute = FrTermsRouteImport.update({
+  id: '/fr_/terms',
+  path: '/fr/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -85,6 +139,7 @@ const ApiWebhooksPancakeRoute = ApiWebhooksPancakeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/es': typeof EsRoute
@@ -92,13 +147,22 @@ export interface FileRoutesByFullPath {
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/es/about': typeof EsAboutRoute
+  '/es/privacy': typeof EsPrivacyRoute
+  '/es/terms': typeof EsTermsRoute
+  '/fr/about': typeof FrAboutRoute
+  '/fr/privacy': typeof FrPrivacyRoute
+  '/fr/terms': typeof FrTermsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/pancake': typeof ApiWebhooksPancakeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/es': typeof EsRoute
@@ -106,14 +170,23 @@ export interface FileRoutesByTo {
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/es/about': typeof EsAboutRoute
+  '/es/privacy': typeof EsPrivacyRoute
+  '/es/terms': typeof EsTermsRoute
+  '/fr/about': typeof FrAboutRoute
+  '/fr/privacy': typeof FrPrivacyRoute
+  '/fr/terms': typeof FrTermsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/pancake': typeof ApiWebhooksPancakeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/es': typeof EsRoute
@@ -121,8 +194,16 @@ export interface FileRoutesById {
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
+  '/es_/about': typeof EsAboutRoute
+  '/es_/privacy': typeof EsPrivacyRoute
+  '/es_/terms': typeof EsTermsRoute
+  '/fr_/about': typeof FrAboutRoute
+  '/fr_/privacy': typeof FrPrivacyRoute
+  '/fr_/terms': typeof FrTermsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/pancake': typeof ApiWebhooksPancakeRoute
 }
@@ -130,6 +211,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/admin'
     | '/dashboard'
     | '/es'
@@ -137,13 +219,22 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/login'
     | '/manifest.webmanifest'
+    | '/privacy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms'
+    | '/es/about'
+    | '/es/privacy'
+    | '/es/terms'
+    | '/fr/about'
+    | '/fr/privacy'
+    | '/fr/terms'
     | '/api/auth/$'
     | '/api/webhooks/pancake'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/admin'
     | '/dashboard'
     | '/es'
@@ -151,13 +242,22 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/login'
     | '/manifest.webmanifest'
+    | '/privacy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms'
+    | '/es/about'
+    | '/es/privacy'
+    | '/es/terms'
+    | '/fr/about'
+    | '/fr/privacy'
+    | '/fr/terms'
     | '/api/auth/$'
     | '/api/webhooks/pancake'
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/admin'
     | '/dashboard'
     | '/es'
@@ -165,14 +265,23 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/login'
     | '/manifest.webmanifest'
+    | '/privacy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms'
+    | '/es_/about'
+    | '/es_/privacy'
+    | '/es_/terms'
+    | '/fr_/about'
+    | '/fr_/privacy'
+    | '/fr_/terms'
     | '/api/auth/$'
     | '/api/webhooks/pancake'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   DashboardRoute: typeof DashboardRoute
   EsRoute: typeof EsRoute
@@ -180,8 +289,16 @@ export interface RootRouteChildren {
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   LoginRoute: typeof LoginRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  PrivacyRoute: typeof PrivacyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
+  EsAboutRoute: typeof EsAboutRoute
+  EsPrivacyRoute: typeof EsPrivacyRoute
+  EsTermsRoute: typeof EsTermsRoute
+  FrAboutRoute: typeof FrAboutRoute
+  FrPrivacyRoute: typeof FrPrivacyRoute
+  FrTermsRoute: typeof FrTermsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiWebhooksPancakeRoute: typeof ApiWebhooksPancakeRoute
 }
@@ -193,6 +310,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -244,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/robots.txt': {
       id: '/robots.txt'
       path: '/robots.txt'
@@ -256,6 +387,55 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es_/about': {
+      id: '/es_/about'
+      path: '/es/about'
+      fullPath: '/es/about'
+      preLoaderRoute: typeof EsAboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es_/privacy': {
+      id: '/es_/privacy'
+      path: '/es/privacy'
+      fullPath: '/es/privacy'
+      preLoaderRoute: typeof EsPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es_/terms': {
+      id: '/es_/terms'
+      path: '/es/terms'
+      fullPath: '/es/terms'
+      preLoaderRoute: typeof EsTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fr_/about': {
+      id: '/fr_/about'
+      path: '/fr/about'
+      fullPath: '/fr/about'
+      preLoaderRoute: typeof FrAboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fr_/privacy': {
+      id: '/fr_/privacy'
+      path: '/fr/privacy'
+      fullPath: '/fr/privacy'
+      preLoaderRoute: typeof FrPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fr_/terms': {
+      id: '/fr_/terms'
+      path: '/fr/terms'
+      fullPath: '/fr/terms'
+      preLoaderRoute: typeof FrTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -277,6 +457,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   DashboardRoute: DashboardRoute,
   EsRoute: EsRoute,
@@ -284,8 +465,16 @@ const rootRouteChildren: RootRouteChildren = {
   LlmsDottxtRoute: LlmsDottxtRoute,
   LoginRoute: LoginRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  PrivacyRoute: PrivacyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
+  EsAboutRoute: EsAboutRoute,
+  EsPrivacyRoute: EsPrivacyRoute,
+  EsTermsRoute: EsTermsRoute,
+  FrAboutRoute: FrAboutRoute,
+  FrPrivacyRoute: FrPrivacyRoute,
+  FrTermsRoute: FrTermsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiWebhooksPancakeRoute: ApiWebhooksPancakeRoute,
 }
