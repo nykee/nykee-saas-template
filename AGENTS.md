@@ -9,7 +9,7 @@ admin surface unless the user explicitly changes the product scope.
 ## Source of truth
 
 - Site identity and public URLs: `src/config/website.ts`
-- English and Chinese copy: `project.inlang/messages/*.json`
+- English, Spanish, and French copy: `project.inlang/messages/*.json`
 - Theme tokens: `src/styles.css`
 - Route surface: `src/routes/`
 - Worker configuration: `wrangler.jsonc`

@@ -136,11 +136,11 @@ describe('SEO and GEO infrastructure', () => {
       pages: [
         ...fixture.pages,
         {
-          id: 'zh-guide',
-          path: '/zh/guides/product',
-          locale: 'zh',
-          title: { zh: '产品指南', en: 'Product guide' },
-          description: { zh: '产品指南。', en: 'Product guide.' },
+          id: 'fr-guide',
+          path: '/fr/guides/product',
+          locale: 'fr',
+          title: { fr: 'Guide produit', en: 'Product guide' },
+          description: { fr: 'Guide produit.', en: 'Product guide.' },
           kind: 'article',
         },
       ],
@@ -148,8 +148,8 @@ describe('SEO and GEO infrastructure', () => {
         ...fixture.internalLinks,
         {
           from: 'guide',
-          to: 'zh-guide',
-          anchor: 'product guide in Chinese',
+          to: 'fr-guide',
+          anchor: 'product guide in French',
           type: 'cross-cluster',
         },
       ],

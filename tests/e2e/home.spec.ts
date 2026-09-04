@@ -10,9 +10,9 @@ test.describe('simple landing page', () => {
       'href',
       new URL('/', page.url()).toString()
     );
-    await expect(page.locator('link[hreflang="zh-CN"]')).toHaveAttribute(
+    await expect(page.locator('link[hreflang="fr"]')).toHaveAttribute(
       'href',
-      new URL('/zh', page.url()).toString()
+      new URL('/fr', page.url()).toString()
     );
     await expect(page.locator('link[hreflang="es"]')).toHaveAttribute(
       'href',
@@ -35,9 +35,9 @@ test.describe('simple landing page', () => {
     await expect(page.locator('footer')).toBeVisible();
   });
 
-  test('renders Simplified Chinese at /zh', async ({ page }) => {
-    await page.goto('/zh');
-    await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+  test('renders French at /fr', async ({ page }) => {
+    await page.goto('/fr');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await expect(page.locator('header nav')).toBeVisible();
     await expect(page.locator('main h1')).toBeVisible();
     await expect(page.locator('#stack')).toBeVisible();
@@ -76,13 +76,13 @@ test.describe('simple landing page', () => {
   }) => {
     await page.goto('/#faq');
     await page.locator('[data-slot="language-switcher-trigger"]').click();
-    const chineseLanguage = page.locator('[data-locale="zh"]');
-    await expect(chineseLanguage).toBeVisible();
-    await expect(page.locator('[data-locale="es"]')).toBeVisible();
-    await chineseLanguage.click();
+    const spanishLanguage = page.locator('[data-locale="es"]');
+    await expect(spanishLanguage).toBeVisible();
+    await expect(page.locator('[data-locale="fr"]')).toBeVisible();
+    await spanishLanguage.click();
 
-    await expect(page).toHaveURL(/\/zh#faq$/);
-    await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+    await expect(page).toHaveURL(/\/es#faq$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   });
 
   test('opens one FAQ answer at a time', async ({ page }) => {
@@ -139,7 +139,7 @@ test.describe('simple landing page', () => {
       '/pricing',
       '/blog',
       '/contact',
-      '/zh/login',
+      '/fr/login',
       '/es/login',
     ]) {
       const response = await page.goto(path);
@@ -165,7 +165,7 @@ test.describe('simple landing page', () => {
     const paths = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
       ([, url]) => new URL(url).pathname
     );
-    expect(paths).toEqual(['/', '/zh', '/es']);
+    expect(paths).toEqual(['/', '/es', '/fr']);
 
     const llms = await request.get('/llms.txt');
     expect(llms.ok()).toBe(true);

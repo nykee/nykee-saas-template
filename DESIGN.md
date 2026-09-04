@@ -26,10 +26,9 @@ accents. Text on color fields uses ink for stable contrast.
 
 ## Typography
 
-Baloo 2 is the display and UI voice for Latin text. It is heavy, rounded, and
-physical without imitating a terminal. Simplified Chinese uses the platform's
-rounded sans-serif fallback. Headings are compact and heavy; body copy stays
-between 60 and 72 characters per line.
+Baloo 2 is the display and UI voice for English, Spanish, and French text. It
+is heavy, rounded, and physical without imitating a terminal. Headings are
+compact and heavy; body copy stays between 60 and 72 characters per line.
 
 ## Components
 

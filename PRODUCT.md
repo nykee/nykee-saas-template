@@ -38,8 +38,8 @@ and administration each have a typed boundary.
 
 ## Capabilities and Constraints
 
-- Human-facing routes are `/` in English, `/zh` in Simplified Chinese, and
-  `/es` in Spanish.
+- Human-facing routes are `/` in English, `/es` in Spanish, and `/fr` in
+  French.
 - The site supports light, dark, and system themes.
 - The landing page includes navigation, product positioning, capabilities,
   stack, included and excluded scope, a four-step customization workflow, FAQ,

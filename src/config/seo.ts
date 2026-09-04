@@ -11,7 +11,7 @@ import { websiteConfig } from './website';
 export type SeoText =
   | string
   | { readonly messageKey: MessageKey }
-  | { readonly en: string; readonly zh?: string; readonly es?: string };
+  | { readonly en: string; readonly es?: string; readonly fr?: string };
 
 /** The page roles used by the hub-and-spoke content architecture. */
 export type SeoPageKind =
@@ -134,21 +134,6 @@ export const seoConfig: SeoInfrastructureConfig = {
       priority: 1,
     },
     {
-      id: 'home-zh',
-      path: '/zh',
-      locale: 'zh',
-      title: { messageKey: 'site_title' },
-      description: { messageKey: 'site_description' },
-      kind: 'landing',
-      alternateId: 'home',
-      primaryKeyword: 'Cloudflare 全栈模板',
-      secondaryKeywords: ['SaaS 模板', 'AI 产品模板'],
-      imageAlt: { messageKey: 'social_image_alt' },
-      indexable: true,
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    {
       id: 'home-es',
       path: '/es',
       locale: 'es',
@@ -158,6 +143,21 @@ export const seoConfig: SeoInfrastructureConfig = {
       alternateId: 'home',
       primaryKeyword: 'plantilla de producto para Cloudflare',
       secondaryKeywords: ['plantilla SaaS', 'plantilla de producto de IA'],
+      imageAlt: { messageKey: 'social_image_alt' },
+      indexable: true,
+      changeFrequency: 'weekly',
+      priority: 1,
+    },
+    {
+      id: 'home-fr',
+      path: '/fr',
+      locale: 'fr',
+      title: { messageKey: 'site_title' },
+      description: { messageKey: 'site_description' },
+      kind: 'landing',
+      alternateId: 'home',
+      primaryKeyword: 'modèle de produit Cloudflare',
+      secondaryKeywords: ['modèle SaaS', 'modèle de produit IA'],
       imageAlt: { messageKey: 'social_image_alt' },
       indexable: true,
       changeFrequency: 'weekly',
@@ -186,8 +186,8 @@ export const seoConfig: SeoInfrastructureConfig = {
     ],
     contentGuidance: {
       en: 'Prefer direct definitions, question-based headings, short self-contained answer blocks, explicit sources, and stable canonical URLs.',
-      zh: '优先使用直接定义、问题式标题、短小完整的答案段落、明确来源和稳定的规范 URL。',
       es: 'Prioriza definiciones directas, títulos formulados como preguntas, respuestas breves y autónomas, fuentes explícitas y URLs canónicas estables.',
+      fr: 'Privilégiez les définitions directes, les titres formulés comme des questions, les réponses brèves et autonomes, les sources explicites et les URL canoniques stables.',
     },
   },
 };

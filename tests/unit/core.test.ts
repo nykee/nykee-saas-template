@@ -8,13 +8,12 @@ import { cn } from '@/lib/utils';
 describe('TanStarter Cloud core contracts', () => {
   it('uses localized simple home paths', () => {
     expect(localizedPath('en')).toBe('/');
-    expect(localizedPath('zh')).toBe('/zh');
     expect(localizedPath('es')).toBe('/es');
+    expect(localizedPath('fr')).toBe('/fr');
     expect(localizedPath('en', '#stack')).toBe('/#stack');
-    expect(localizedPath('zh', '#stack')).toBe('/zh#stack');
     expect(localizedPath('es', '#stack')).toBe('/es#stack');
-    expect(localeMeta.zh.hreflang).toBe('zh-CN');
     expect(localeMeta.es.hreflang).toBe('es');
+    expect(localeMeta.fr.hreflang).toBe('fr');
   });
 
   it('keeps the repository as the only external destination', () => {
@@ -36,11 +35,11 @@ describe('TanStarter Cloud core contracts', () => {
 
   it('builds absolute metadata from the configured or request origin', () => {
     expect(siteOrigin('https://example.com/')).toBe('https://example.com');
-    expect(absoluteSiteUrl('/zh', 'https://example.com')).toBe(
-      'https://example.com/zh'
-    );
     expect(absoluteSiteUrl('/es', 'https://example.com')).toBe(
       'https://example.com/es'
+    );
+    expect(absoluteSiteUrl('/fr', 'https://example.com')).toBe(
+      'https://example.com/fr'
     );
 
     const head = homeHead('en', 'https://example.com');

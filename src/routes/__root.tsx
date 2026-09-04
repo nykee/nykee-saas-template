@@ -39,11 +39,11 @@ export const Route = createRootRoute({
 });
 
 function currentLocale(pathname: string): AppLocale {
-  if (pathname === '/zh' || pathname.startsWith('/zh/')) {
-    return 'zh';
-  }
   if (pathname === '/es' || pathname.startsWith('/es/')) {
     return 'es';
+  }
+  if (pathname === '/fr' || pathname.startsWith('/fr/')) {
+    return 'fr';
   }
   return 'en';
 }

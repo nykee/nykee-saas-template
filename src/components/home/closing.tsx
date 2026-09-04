@@ -6,20 +6,12 @@ import { type AppLocale, message } from '@/lib/locale';
 
 export function Closing({ locale }: { locale: AppLocale }) {
   const closingTitle = message('closing_title', locale);
-  const [firstLine, ...remainingLines] = closingTitle.split('，');
 
   return (
     <section className="border-t border-ink/15 bg-orange py-20 text-ink sm:py-28">
       <Container className="text-center">
         <h2 className="mx-auto max-w-4xl text-balance text-5xl font-black leading-[1.08] tracking-[-0.035em] sm:text-6xl">
-          {locale === 'zh' ? (
-            <>
-              {firstLine}，<br />
-              {remainingLines.join('，')}
-            </>
-          ) : (
-            closingTitle
-          )}
+          {closingTitle}
         </h2>
         <p className="mx-auto mt-6 max-w-[66ch] text-lg leading-8 text-ink/75">
           {message('closing_description', locale)}

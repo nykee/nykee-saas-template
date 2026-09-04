@@ -7,7 +7,7 @@ TanStarter Cloud is a reusable TanStack Start product starter for Cloudflare. It
 - Pancake hosted checkout and verified webhook ingestion
 - Responsive account dashboard and administrator workspace
 - Workers, D1, KV, R2, Queues, Durable Objects, Workers AI, and Analytics Engine bindings
-- English, Simplified Chinese, and Spanish public-site copy, SEO endpoints, themes, tests, and one-command deployment
+- English, Spanish, and French public-site copy, SEO endpoints, themes, tests, and one-command deployment
 
 The template intentionally leaves credentials, Cloudflare resource IDs, product IDs, and merchant keys as deployment configuration. It does not commit an account ID, custom domain, or secret.
 
@@ -105,8 +105,8 @@ The browser cannot submit a product ID, amount, merchant ID, or private key. Upd
 ## Routes
 
 - `/` — English public landing page
-- `/zh` — Simplified Chinese public landing page
 - `/es` — Spanish public landing page
+- `/fr` — French public landing page
 - `/login` — Google OAuth and Google One Tap sign-in
 - `/dashboard` — authenticated account and billing dashboard
 - `/admin` — administrator metrics and access management
@@ -176,7 +176,7 @@ belongs to one.
 | `pnpm build` | Build client/Worker output and type-check |
 | `pnpm e2e` | Run Playwright acceptance tests |
 | `pnpm locale:compile` | Regenerate Paraglide output after copy changes |
-| `pnpm locale:check` | Check English/Chinese/Spanish message-key parity |
+| `pnpm locale:check` | Check English/Spanish/French message-key parity |
 | `pnpm db:generate` | Generate a D1 migration from `src/db/schema.ts` |
 | `pnpm db:migrate:local` | Apply migrations to local D1 |
 | `pnpm db:migrate:remote` | Apply migrations to remote D1 |
@@ -186,7 +186,7 @@ belongs to one.
 ## Customize
 
 1. Update site identity and navigation in `src/config/website.ts`.
-2. Update English, Chinese, and Spanish copy in `project.inlang/messages/en.json`, `project.inlang/messages/zh.json`, and `project.inlang/messages/es.json`, then run `pnpm locale:compile`.
+2. Update English, Spanish, and French copy in `project.inlang/messages/en.json`, `project.inlang/messages/es.json`, and `project.inlang/messages/fr.json`, then run `pnpm locale:compile`.
 3. Replace `public/favicon.svg` and `public/og.png` with your brand assets.
 4. Set the Pancake product variables for the product this site sells.
 5. Add product-specific tables and server functions beside the existing shared data services.

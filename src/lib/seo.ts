@@ -472,7 +472,7 @@ export function pageHead(pageId: string, requestOrigin?: string) {
 /** Keep the existing homepage API while routing it through the generic page registry. */
 export function homeHead(locale: AppLocale, requestOrigin?: string) {
   const pageId =
-    locale === 'zh' ? 'home-zh' : locale === 'es' ? 'home-es' : 'home-en';
+    locale === 'es' ? 'home-es' : locale === 'fr' ? 'home-fr' : 'home-en';
   return pageHead(pageId, requestOrigin);
 }
 

@@ -13,12 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as EsRouteImport } from './routes/es'
+import { Route as FrRouteImport } from './routes/fr'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ZhRouteImport } from './routes/zh'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiWebhooksPancakeRouteImport } from './routes/api/webhooks/pancake'
 
@@ -40,6 +40,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const EsRoute = EsRouteImport.update({
   id: '/es',
   path: '/es',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrRoute = FrRouteImport.update({
+  id: '/fr',
+  path: '/fr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
@@ -67,11 +72,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ZhRoute = ZhRouteImport.update({
-  id: '/zh',
-  path: '/zh',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -88,12 +88,12 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/es': typeof EsRoute
+  '/fr': typeof FrRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/zh': typeof ZhRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/pancake': typeof ApiWebhooksPancakeRoute
 }
@@ -102,12 +102,12 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/es': typeof EsRoute
+  '/fr': typeof FrRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/zh': typeof ZhRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/pancake': typeof ApiWebhooksPancakeRoute
 }
@@ -117,12 +117,12 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/es': typeof EsRoute
+  '/fr': typeof FrRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/zh': typeof ZhRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/pancake': typeof ApiWebhooksPancakeRoute
 }
@@ -133,12 +133,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/es'
+    | '/fr'
     | '/llms.txt'
     | '/login'
     | '/manifest.webmanifest'
     | '/robots.txt'
     | '/sitemap.xml'
-    | '/zh'
     | '/api/auth/$'
     | '/api/webhooks/pancake'
   fileRoutesByTo: FileRoutesByTo
@@ -147,12 +147,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/es'
+    | '/fr'
     | '/llms.txt'
     | '/login'
     | '/manifest.webmanifest'
     | '/robots.txt'
     | '/sitemap.xml'
-    | '/zh'
     | '/api/auth/$'
     | '/api/webhooks/pancake'
   id:
@@ -161,12 +161,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/es'
+    | '/fr'
     | '/llms.txt'
     | '/login'
     | '/manifest.webmanifest'
     | '/robots.txt'
     | '/sitemap.xml'
-    | '/zh'
     | '/api/auth/$'
     | '/api/webhooks/pancake'
   fileRoutesById: FileRoutesById
@@ -176,12 +176,12 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   DashboardRoute: typeof DashboardRoute
   EsRoute: typeof EsRoute
+  FrRoute: typeof FrRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   LoginRoute: typeof LoginRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  ZhRoute: typeof ZhRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiWebhooksPancakeRoute: typeof ApiWebhooksPancakeRoute
 }
@@ -214,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/es'
       fullPath: '/es'
       preLoaderRoute: typeof EsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fr': {
+      id: '/fr'
+      path: '/fr'
+      fullPath: '/fr'
+      preLoaderRoute: typeof FrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/llms.txt': {
@@ -251,13 +258,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/zh': {
-      id: '/zh'
-      path: '/zh'
-      fullPath: '/zh'
-      preLoaderRoute: typeof ZhRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -280,12 +280,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   DashboardRoute: DashboardRoute,
   EsRoute: EsRoute,
+  FrRoute: FrRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
   LoginRoute: LoginRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  ZhRoute: ZhRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiWebhooksPancakeRoute: ApiWebhooksPancakeRoute,
 }
