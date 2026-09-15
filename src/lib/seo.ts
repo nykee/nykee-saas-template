@@ -4,6 +4,11 @@ import {
   type SeoText,
   seoConfig,
 } from '@/config/seo';
+import {
+  blogPostPath,
+  blogPostSeoId,
+  blogSeoId,
+} from '@/config/blog';
 import { websiteConfig } from '@/config/website';
 import { type AppLocale, localeMeta, message } from '@/lib/locale';
 
@@ -329,32 +334,36 @@ export function buildFaqJsonLd(entries: readonly FaqEntry[]) {
 }
 
 /** Build the common metadata and JSON-LD graph for any registered public page. */
-export function pageHead(pageId: string, requestOrigin?: string) {
-  const page = getSeoPage(pageId);
-  validateSeoConfig();
+function buildSeoPageHead(
+  page: SeoPageDefinition,
+  requestOrigin: string | undefined,
+  config: SeoInfrastructureConfig,
+  articleDates?: { readonly datePublished?: string }
+) {
+  validateSeoConfig(config);
   const title = resolveSeoText(page.title, page.locale);
   const description = resolveSeoText(page.description, page.locale);
   const imageAlt = resolveSeoText(page.imageAlt ?? page.title, page.locale);
   const pageUrl = absoluteSiteUrl(page.path, requestOrigin);
   const imageUrl = absoluteSiteUrl(page.imagePath ?? '/og.png', requestOrigin);
   const alternates = page.alternateId
-    ? seoConfig.pages.filter(
+    ? config.pages.filter(
         (candidate) =>
           candidate.alternateId === page.alternateId &&
           candidate.indexable !== false
       )
     : [page];
-  const breadcrumbs = getBreadcrumbsForPage(page.id);
+  const breadcrumbs = getBreadcrumbsForPage(page.id, config);
   const origin = siteOrigin(requestOrigin);
-  const organization = buildOrganizationJsonLd(origin);
+  const organization = buildOrganizationJsonLd(origin, config);
   const graph: Record<string, unknown>[] = [
     organization,
     {
       '@type': 'WebSite',
       '@id': `${origin}/#website`,
-      name: seoConfig.organization.name,
+      name: config.organization.name,
       url: origin,
-      description: seoConfig.organization.description,
+      description: config.organization.description,
       publisher: { '@id': `${origin}/#organization` },
       inLanguage: localeMeta[page.locale].hreflang,
     },
@@ -384,6 +393,9 @@ export function pageHead(pageId: string, requestOrigin?: string) {
       description,
       mainEntityOfPage: { '@id': `${pageUrl}#webpage` },
       publisher: { '@id': `${origin}/#organization` },
+      ...(articleDates?.datePublished
+        ? { datePublished: articleDates.datePublished }
+        : {}),
       ...(page.lastModified ? { dateModified: page.lastModified } : {}),
     });
   }
@@ -412,7 +424,7 @@ export function pageHead(pageId: string, requestOrigin?: string) {
           ? 'article'
           : 'website',
     },
-    { property: 'og:site_name', content: seoConfig.organization.name },
+    { property: 'og:site_name', content: config.organization.name },
     { property: 'og:title', content: title },
     { property: 'og:description', content: description },
     { property: 'og:url', content: pageUrl },
@@ -469,6 +481,70 @@ export function pageHead(pageId: string, requestOrigin?: string) {
   };
 }
 
+/** Build metadata for a statically registered public page. */
+export function pageHead(pageId: string, requestOrigin?: string) {
+  return buildSeoPageHead(
+    getSeoPage(pageId),
+    requestOrigin,
+    seoConfig
+  );
+}
+
+/** Keep the blog index on the same metadata contract as static public pages. */
+export function blogIndexHead(
+  locale: AppLocale,
+  requestOrigin?: string
+) {
+  return pageHead(blogSeoId(locale), requestOrigin);
+}
+
+export interface BlogSeoPost {
+  readonly slug: string;
+  readonly locale: AppLocale;
+  readonly title: string;
+  readonly excerpt: string;
+  readonly publishedAt: string;
+  readonly updatedAt: string;
+}
+
+/**
+ * Convert a database article into the same SEO page shape used by the static
+ * registry. Dynamic articles are validated and added to a temporary config
+ * only for their current request, so drafts can never enter public metadata.
+ */
+export function blogPostSeoPage(post: BlogSeoPost): SeoPageDefinition {
+  return {
+    id: blogPostSeoId(post.locale, post.slug),
+    path: blogPostPath(post.locale, post.slug),
+    locale: post.locale,
+    title: post.title,
+    description: post.excerpt,
+    kind: 'article',
+    alternateId: `blog-post-${post.slug}`,
+    primaryKeyword: post.title,
+    breadcrumbIds: [blogSeoId(post.locale)],
+    indexable: true,
+    lastModified: post.updatedAt,
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  };
+}
+
+/** Build Article metadata for one published, server-loaded blog post. */
+export function blogPostHead(
+  post: BlogSeoPost,
+  requestOrigin?: string
+) {
+  const page = blogPostSeoPage(post);
+  const config: SeoInfrastructureConfig = {
+    ...seoConfig,
+    pages: [...seoConfig.pages, page],
+  };
+  return buildSeoPageHead(page, requestOrigin, config, {
+    datePublished: post.publishedAt,
+  });
+}
+
 /** Keep the existing homepage API while routing it through the generic page registry. */
 export function homeHead(locale: AppLocale, requestOrigin?: string) {
   const pageId =
@@ -488,11 +564,18 @@ function xmlEscape(value: string) {
 /** Generate a sitemap from the same public page registry used by JSON-LD. */
 export function buildSitemapXml(
   requestOrigin?: string,
-  config: SeoInfrastructureConfig = seoConfig
+  config: SeoInfrastructureConfig = seoConfig,
+  additionalPages: readonly SeoPageDefinition[] = []
 ) {
-  validateSeoConfig(config);
+  const effectiveConfig =
+    additionalPages.length > 0
+      ? { ...config, pages: [...config.pages, ...additionalPages] }
+      : config;
+  validateSeoConfig(effectiveConfig);
   const origin = siteOrigin(requestOrigin);
-  const pages = config.pages.filter((page) => page.indexable !== false);
+  const pages = effectiveConfig.pages.filter(
+    (page) => page.indexable !== false
+  );
   const body = pages
     .map((page) => {
       const alternates = page.alternateId
@@ -547,11 +630,18 @@ function markdownSafe(value: string) {
 /** Generate the root llms.txt brief from public pages, clusters, and key facts. */
 export function buildLlmsTxt(
   requestOrigin?: string,
-  config: SeoInfrastructureConfig = seoConfig
+  config: SeoInfrastructureConfig = seoConfig,
+  additionalPages: readonly SeoPageDefinition[] = []
 ) {
-  validateSeoConfig(config);
+  const effectiveConfig =
+    additionalPages.length > 0
+      ? { ...config, pages: [...config.pages, ...additionalPages] }
+      : config;
+  validateSeoConfig(effectiveConfig);
   const origin = siteOrigin(requestOrigin);
-  const pages = config.pages.filter((page) => page.indexable !== false);
+  const pages = effectiveConfig.pages.filter(
+    (page) => page.indexable !== false
+  );
   const lines = [
     `# ${config.organization.name}`,
     `> ${config.organization.description}`,
@@ -563,16 +653,16 @@ export function buildLlmsTxt(
     ),
   ];
 
-  if (config.clusters.length > 0) {
+  if (effectiveConfig.clusters.length > 0) {
     lines.push('', '## Topic clusters');
-    for (const cluster of config.clusters) {
+    for (const cluster of effectiveConfig.clusters) {
       lines.push(
         `### ${resolveSeoText(cluster.name, cluster.locale)}`,
         resolveSeoText(cluster.description, cluster.locale)
       );
       const pageIds = [cluster.pillarId, ...cluster.spokeIds];
       for (const pageId of pageIds) {
-        const page = getSeoPage(pageId, config);
+        const page = getSeoPage(pageId, effectiveConfig);
         lines.push(
           `- [${markdownSafe(resolveSeoText(page.title, page.locale))}](${absoluteSiteUrl(page.path, origin)}): ${resolveSeoText(page.description, page.locale)}`
         );
@@ -583,10 +673,10 @@ export function buildLlmsTxt(
   lines.push(
     '',
     '## Key facts',
-    ...config.geo.keyFacts.map((fact) => `- ${resolveSeoText(fact, 'en')}`),
+    ...effectiveConfig.geo.keyFacts.map((fact) => `- ${resolveSeoText(fact, 'en')}`),
     '',
     '## Content guidance',
-    resolveSeoText(config.geo.contentGuidance, 'en')
+    resolveSeoText(effectiveConfig.geo.contentGuidance, 'en')
   );
   return `${lines.join('\n')}\n`;
 }

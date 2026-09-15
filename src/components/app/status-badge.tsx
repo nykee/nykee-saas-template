@@ -31,10 +31,14 @@ export function statusVariant(
   status: string
 ): 'positive' | 'warning' | 'danger' | 'neutral' {
   const normalized = status.toLowerCase();
-  if (['active', 'completed', 'paid', 'processed'].includes(normalized)) {
+  if (
+    ['active', 'completed', 'paid', 'processed', 'published'].includes(
+      normalized
+    )
+  ) {
     return 'positive';
   }
-  if (['pending', 'received', 'trialing'].includes(normalized)) {
+  if (['pending', 'received', 'trialing', 'draft'].includes(normalized)) {
     return 'warning';
   }
   if (

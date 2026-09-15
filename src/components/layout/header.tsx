@@ -6,6 +6,7 @@ import { ThemeSwitcher } from '@/components/layout/theme-switcher';
 import { Logo } from '@/components/shared/logo';
 import { Button } from '@/components/ui/button';
 import { ButtonLink } from '@/components/ui/button-link';
+import { blogPath } from '@/config/blog';
 import { websiteConfig } from '@/config/website';
 import { useScroll } from '@/hooks/use-scroll';
 import { type AppLocale, localizedPath, message } from '@/lib/locale';
@@ -56,6 +57,12 @@ export function Header({ locale }: { locale: AppLocale }) {
                 {message(item.labelKey as 'nav_stack', locale)}
               </a>
             ))}
+            <a
+              href={blogPath(locale)}
+              className="rounded-md px-3 py-2 text-sm font-bold no-underline hover:bg-yellow hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus"
+            >
+              {message('nav_blog', locale)}
+            </a>
           </div>
 
           <div className="ml-auto flex items-center gap-2 lg:ml-0 lg:justify-self-end">
@@ -116,6 +123,12 @@ export function Header({ locale }: { locale: AppLocale }) {
                 {message(item.labelKey as 'nav_stack', locale)}
               </a>
             ))}
+            <a
+              href={blogPath(locale)}
+              className="rounded-lg border-2 border-transparent px-4 py-3 font-bold no-underline hover:border-ink hover:bg-yellow hover:text-ink"
+            >
+              {message('nav_blog', locale)}
+            </a>
             <ButtonLink href="/login" variant="secondary" className="mt-2">
               {message('auth_nav_sign_in', locale)}
             </ButtonLink>

@@ -1,4 +1,9 @@
 import { createServerFn } from '@tanstack/react-start';
+import {
+  isAppLocale,
+  isBlogSlug,
+  validateCreateBlogPostInput,
+} from '@/lib/blog';
 
 /**
  * Client-safe Server Function declarations for account and admin pages.
@@ -7,6 +12,59 @@ import { createServerFn } from '@tanstack/react-start';
  * can therefore extract the implementation into the server environment while
  * the client bundle retains a small typed RPC reference.
  */
+/** Return the published blog index for one supported locale. */
+export const getBlogPosts = createServerFn({ method: 'GET' })
+  .validator((data: unknown) => {
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('A supported blog locale is required.');
+    }
+    const locale = (data as Record<string, unknown>).locale;
+    if (!isAppLocale(locale)) {
+      throw new Error('A supported blog locale is required.');
+    }
+    return { locale };
+  })
+  .handler(async ({ data }) => {
+    const [{ setResponseHeader }, { getPublishedBlogPosts }] =
+      await Promise.all([
+        import('@tanstack/react-start/server'),
+        import('./blog.server'),
+      ]);
+    setResponseHeader(
+      'Cache-Control',
+      'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
+    );
+    return getPublishedBlogPosts(data.locale);
+  });
+
+/** Return one published article, keeping all draft rows server-side. */
+export const getBlogPost = createServerFn({ method: 'GET' })
+  .validator((data: unknown) => {
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Invalid blog article lookup.');
+    }
+    const input = data as Record<string, unknown>;
+    const locale = input.locale;
+    const slug = input.slug;
+    if (!isAppLocale(locale) || !isBlogSlug(slug)) {
+      throw new Error('A supported locale and valid blog slug are required.');
+    }
+    return { locale, slug };
+  })
+  .handler(async ({ data }) => {
+    const [{ setResponseHeader }, { getPublishedBlogPost }] = await Promise.all(
+      [
+        import('@tanstack/react-start/server'),
+        import('./blog.server'),
+      ]
+    );
+    setResponseHeader(
+      'Cache-Control',
+      'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
+    );
+    return getPublishedBlogPost(data.locale, data.slug);
+  });
+
 export const getDashboardData = createServerFn({ method: 'GET' }).handler(
   async () => {
     const [
@@ -51,6 +109,19 @@ export const createCheckoutSession = createServerFn({ method: 'POST' }).handler(
   }
 );
 
+/** Create one audited blog article from the administrator workspace. */
+export const createBlogPost = createServerFn({ method: 'POST' })
+  .validator(validateCreateBlogPostInput)
+  .handler(async ({ data }) => {
+    const [{ requireAdminSession }, { createStoredBlogPost }] =
+      await Promise.all([
+        import('./session.server'),
+        import('./blog.server'),
+      ]);
+    const session = await requireAdminSession();
+    return createStoredBlogPost(data, session.user.id);
+  });
+
 /** Return the private administrator projection used by `/admin`. */
 export const getAdminDashboardData = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -59,12 +130,14 @@ export const getAdminDashboardData = createServerFn({ method: 'GET' }).handler(
       { requireAdminSession },
       { getDatabase },
       { getRecentOrders },
+      { getAdminBlogPosts },
       { billingOrder, pancakeWebhookEvent, subscription, user },
     ] = await Promise.all([
       import('@tanstack/react-start/server'),
       import('./session.server'),
       import('./db.server'),
       import('./events.server'),
+      import('./blog.server'),
       import('@/db/schema'),
     ]);
     const session = await requireAdminSession();
@@ -79,6 +152,7 @@ export const getAdminDashboardData = createServerFn({ method: 'GET' }).handler(
       activeSubscriptionCount,
       pendingWebhookCount,
       recentOrders,
+      blogPosts,
     ] = await Promise.all([
       db
         .select({
@@ -106,8 +180,9 @@ export const getAdminDashboardData = createServerFn({ method: 'GET' }).handler(
             eq(pancakeWebhookEvent.processingStatus, 'received'),
             eq(pancakeWebhookEvent.mode, 'prod')
           )
-        ),
+      ),
       getRecentOrders(10),
+      getAdminBlogPosts(50),
     ]);
 
     return {
@@ -126,6 +201,7 @@ export const getAdminDashboardData = createServerFn({ method: 'GET' }).handler(
         ...order,
         createdAt: order.createdAt.toISOString(),
       })),
+      blogPosts,
     };
   }
 );

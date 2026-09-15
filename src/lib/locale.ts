@@ -5,6 +5,14 @@ export const appLocales = ['en', 'es', 'fr'] as const;
 export type AppLocale = (typeof appLocales)[number];
 export type MessageKey = keyof typeof m;
 
+/** Runtime guard for route params and server-function input validators. */
+export function isAppLocale(value: unknown): value is AppLocale {
+  return (
+    typeof value === 'string' &&
+    (appLocales as readonly string[]).includes(value)
+  );
+}
+
 export function message(key: MessageKey, locale: AppLocale): string {
   const value = m[key];
   if (typeof value !== 'function') {

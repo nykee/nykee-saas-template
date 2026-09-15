@@ -221,12 +221,44 @@ export const auditLog = sqliteTable(
   ]
 );
 
+/**
+ * Published and draft content for the reusable blog surface.
+ *
+ * Slugs are unique within a locale rather than globally. This lets an English
+ * article and its Spanish or French translation share the same canonical slug
+ * while still living at separate localized routes.
+ */
+export const blogPost = sqliteTable(
+  'blog_post',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull(),
+    locale: text('locale').notNull(),
+    title: text('title').notNull(),
+    excerpt: text('excerpt').notNull(),
+    content: text('content').notNull(),
+    status: text('status').notNull().default('draft'),
+    authorUserId: text('author_user_id').references(() => user.id, {
+      onDelete: 'set null',
+    }),
+    publishedAt: integer('published_at', { mode: 'timestamp_ms' }),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  },
+  (table) => [
+    uniqueIndex('blog_post_locale_slug_unique').on(table.locale, table.slug),
+    index('blog_post_locale_status_idx').on(table.locale, table.status),
+    index('blog_post_published_at_idx').on(table.publishedAt),
+  ]
+);
+
 export const userRelations = relations(user, ({ many }) => ({
   accounts: many(account),
   sessions: many(session),
   orders: many(billingOrder),
   subscriptions: many(subscription),
   auditLogs: many(auditLog),
+  blogPosts: many(blogPost),
 }));
 
 export const accountRelations = relations(account, ({ one }) => ({
@@ -264,6 +296,13 @@ export const auditLogRelations = relations(auditLog, ({ one }) => ({
   }),
 }));
 
+export const blogPostRelations = relations(blogPost, ({ one }) => ({
+  author: one(user, {
+    fields: [blogPost.authorUserId],
+    references: [user.id],
+  }),
+}));
+
 /**
  * The full schema object is passed to Better Auth's Drizzle adapter. Exporting
  * it explicitly prevents the adapter from silently missing custom table
@@ -278,4 +317,5 @@ export const databaseSchema = {
   subscription,
   pancakeWebhookEvent,
   auditLog,
+  blogPost,
 };

@@ -1,15 +1,20 @@
-import { IconActivity, IconUsers } from '@tabler/icons-react';
+import { IconActivity, IconArticle, IconUsers } from '@tabler/icons-react';
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
 import { useState } from 'react';
+import { AdminSection } from '@/components/app/admin-section';
 import { AppShell } from '@/components/app/app-shell';
+import { BlogPostForm } from '@/components/app/blog-post-form';
+import { BlogPostTable } from '@/components/app/blog-post-table';
 import { Metric } from '@/components/app/metric';
 import { StatusBadge, statusVariant } from '@/components/app/status-badge';
 import { Button } from '@/components/ui/button';
 import {
+  createBlogPost,
   getAdminDashboardData,
   updateUserAccess,
 } from '@/lib/server/app-functions.functions';
+import type { CreateBlogPostInput } from '@/lib/blog';
 import { getCurrentSession } from '@/lib/server/session.functions';
 
 /** Keep the administrator surface server-protected as well as visually gated. */
@@ -38,8 +43,11 @@ function AdminPage() {
   const data = Route.useLoaderData();
   const router = useRouter();
   const updateAccess = useServerFn(updateUserAccess);
+  const createPost = useServerFn(createBlogPost);
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const [pendingBlogPost, setPendingBlogPost] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   async function changeAccess(
     input:
@@ -48,6 +56,7 @@ function AdminPage() {
   ) {
     setPendingUserId(input.userId);
     setError(null);
+    setSuccess(null);
     try {
       await updateAccess({ data: input });
       await router.invalidate({ sync: true });
@@ -57,6 +66,25 @@ function AdminPage() {
       );
     } finally {
       setPendingUserId(null);
+    }
+  }
+
+  async function addBlogPost(input: CreateBlogPostInput): Promise<boolean> {
+    setPendingBlogPost(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      await createPost({ data: input });
+      await router.invalidate({ sync: true });
+      setSuccess('Blog post created.');
+      return true;
+    } catch (reason: unknown) {
+      setError(
+        reason instanceof Error ? reason.message : 'Blog post creation failed.'
+      );
+      return false;
+    } finally {
+      setPendingBlogPost(false);
     }
   }
 
@@ -103,18 +131,36 @@ function AdminPage() {
         </p>
       ) : null}
 
-      <section className="mt-12">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.1em] text-muted-foreground">
-              Access management
-            </p>
-            <h2 className="mt-1 text-3xl font-black tracking-[-0.04em]">
-              Users
-            </h2>
-          </div>
-          <IconUsers aria-hidden="true" size={28} />
-        </div>
+      {success ? (
+        <p
+          role="status"
+          className="mt-6 rounded-lg border-2 border-ink bg-green px-4 py-3 font-bold text-ink"
+        >
+          {success}
+        </p>
+      ) : null}
+
+      <AdminSection
+        eyebrow="Content"
+        title="Create blog post"
+        icon={<IconArticle aria-hidden="true" size={28} />}
+      >
+        <BlogPostForm pending={pendingBlogPost} onSubmit={addBlogPost} />
+      </AdminSection>
+
+      <AdminSection
+        eyebrow="Content library"
+        title="Blog posts"
+        icon={<IconArticle aria-hidden="true" size={28} />}
+      >
+        <BlogPostTable posts={data.blogPosts} />
+      </AdminSection>
+
+      <AdminSection
+        eyebrow="Access management"
+        title="Users"
+        icon={<IconUsers aria-hidden="true" size={28} />}
+      >
         <div className="overflow-x-auto rounded-[14px] border-2 border-ink bg-surface shadow-brutal">
           <table className="w-full min-w-[58rem] border-collapse text-left">
             <caption className="sr-only">User access management</caption>
@@ -206,20 +252,13 @@ function AdminPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </AdminSection>
 
-      <section className="mt-12">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.1em] text-muted-foreground">
-              Payment feed
-            </p>
-            <h2 className="mt-1 text-3xl font-black tracking-[-0.04em]">
-              Recent orders
-            </h2>
-          </div>
-          <IconActivity aria-hidden="true" size={28} />
-        </div>
+      <AdminSection
+        eyebrow="Payment feed"
+        title="Recent orders"
+        icon={<IconActivity aria-hidden="true" size={28} />}
+      >
         <div className="grid gap-3">
           {data.recentOrders.map((order) => (
             <div
@@ -247,7 +286,7 @@ function AdminPage() {
             </div>
           ))}
         </div>
-      </section>
+      </AdminSection>
     </AppShell>
   );
 }

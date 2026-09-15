@@ -5,6 +5,7 @@ import {
   staticPageKinds,
   staticPagePath,
 } from '@/config/static-pages';
+import { blogPath } from '@/config/blog';
 import { type AppLocale, message } from '@/lib/locale';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,14 @@ export function PublicPageLinks({
       {...props}
     >
       <ul className={cn('flex flex-wrap gap-x-5 gap-y-2', listClassName)}>
+        <li>
+          <a
+            href={blogPath(locale)}
+            className="text-sm font-bold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {message('nav_blog', locale)}
+          </a>
+        </li>
         {staticPageKinds.map((page) => {
           const current = page === currentPage;
           const definition = staticPageDefinitions[page];
