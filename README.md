@@ -11,6 +11,18 @@ nykee-saas-template is a reusable TanStack Start product starter for Cloudflare.
 
 The template intentionally leaves credentials, Cloudflare resource IDs, product IDs, and merchant keys as deployment configuration. It does not commit an account ID, custom domain, or secret.
 
+## Sites built with this template
+
+Site build with this template:
+
+- [kuvmusic.com](https://kuvmusic.com)
+- [kuvidea.com](https://kuvidea.com)
+- [kuvstudio.com](https://kuvstudio.com)
+- [hannahdream.com](https://hannahdream.com)
+- [musicpromptpro.com](https://musicpromptpro.com)
+- [visualiquid.com](https://visualiquid.com)
+- [niubid.lol](https://niubid.lol)
+
 ## Quick start
 
 ```bash
