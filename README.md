@@ -1,6 +1,6 @@
-# TanStarter Cloud
+# nykee-saas-template
 
-TanStarter Cloud is a reusable TanStack Start product starter for Cloudflare. It keeps the public landing page from the original template and adds the common application surface needed by SaaS and AI products:
+nykee-saas-template is a reusable TanStack Start product starter for Cloudflare. It keeps the public landing page from the original template and adds the common application surface needed by SaaS and AI products:
 
 - Better Auth with Google OAuth and Google One Tap
 - D1-backed users, sessions, billing projections, webhook ledger, and audit log
@@ -27,11 +27,11 @@ Set `VITE_GOOGLE_CLIENT_ID` in `.env`. Set the matching server credentials and P
 `wrangler.jsonc` declares the complete binding surface. Replace the placeholder D1 and KV IDs with the values returned by Wrangler, then create the resources in your Cloudflare account:
 
 ```bash
-pnpm exec wrangler d1 create tanstarter-cloud-db
+pnpm exec wrangler d1 create nykee-saas-template-db
 pnpm exec wrangler kv namespace create CACHE
-pnpm exec wrangler r2 bucket create tanstarter-cloud-uploads
-pnpm exec wrangler queues create tanstarter-cloud-events
-pnpm exec wrangler queues create tanstarter-cloud-events-dlq
+pnpm exec wrangler r2 bucket create nykee-saas-template-uploads
+pnpm exec wrangler queues create nykee-saas-template-events
+pnpm exec wrangler queues create nykee-saas-template-events-dlq
 ```
 
 Copy the returned D1 `database_id` and KV `id` into `wrangler.jsonc`. Keep `workers_dev: true` as the committed deployment default. Durable Objects, Workers AI, Analytics Engine, and the Queue consumer are declared in the same file and do not require an account ID in the repository.
@@ -50,7 +50,7 @@ is intentionally an explicit deployment step so a fresh template cannot
 silently grant administrative access to an arbitrary account:
 
 ```bash
-pnpm exec wrangler d1 execute tanstarter-cloud-db --remote --command "UPDATE user SET role = 'admin', updated_at = unixepoch() * 1000 WHERE email = 'you@example.com';"
+pnpm exec wrangler d1 execute nykee-saas-template-db --remote --command "UPDATE user SET role = 'admin', updated_at = unixepoch() * 1000 WHERE email = 'you@example.com';"
 ```
 
 Replace the email and use `--local` when promoting a local development user.
