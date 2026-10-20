@@ -1,5 +1,6 @@
 import { IconMenu2, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import { LoginDialog } from '@/components/auth/login-dialog';
 import { Container } from '@/components/layout/container';
 import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { ThemeSwitcher } from '@/components/layout/theme-switcher';
@@ -15,14 +16,32 @@ import { cn } from '@/lib/utils';
 export function Header({ locale }: { locale: AppLocale }) {
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
   const scrolled = useScroll(50);
 
   useEffect(() => {
     setReady(true);
     const close = () => setOpen(false);
     window.addEventListener('hashchange', close);
+    if (new URLSearchParams(window.location.search).get('login') === 'true') {
+      setLoginOpen(true);
+    }
     return () => window.removeEventListener('hashchange', close);
   }, []);
+
+  const handleLoginOpenChange = (isOpen: boolean) => {
+    setLoginOpen(isOpen);
+    if (
+      !isOpen &&
+      typeof window !== 'undefined' &&
+      window.location.search.includes('login=true')
+    ) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('login');
+      const newUrl = url.pathname + (url.search || '') + url.hash;
+      window.history.replaceState({}, '', newUrl);
+    }
+  };
 
   return (
     <header
@@ -69,13 +88,13 @@ export function Header({ locale }: { locale: AppLocale }) {
             <LanguageSwitcher locale={locale} />
             <ThemeSwitcher locale={locale} />
             <span className="hidden sm:block">
-              <ButtonLink
+              <Button
                 variant="plain"
                 className="!min-h-11 px-4 py-2 text-sm"
-                href="/login"
+                onClick={() => setLoginOpen(true)}
               >
                 {message('auth_nav_sign_in', locale)}
-              </ButtonLink>
+              </Button>
             </span>
             <span className="hidden sm:block">
               <ButtonLink
@@ -129,9 +148,16 @@ export function Header({ locale }: { locale: AppLocale }) {
             >
               {message('nav_blog', locale)}
             </a>
-            <ButtonLink href="/login" variant="secondary" className="mt-2">
+            <Button
+              variant="secondary"
+              className="mt-2"
+              onClick={() => {
+                setLoginOpen(true);
+                setOpen(false);
+              }}
+            >
               {message('auth_nav_sign_in', locale)}
-            </ButtonLink>
+            </Button>
             <ButtonLink
               href={websiteConfig.repository}
               className="mt-2 sm:hidden"
@@ -143,6 +169,11 @@ export function Header({ locale }: { locale: AppLocale }) {
           </div>
         )}
       </Container>
+      <LoginDialog
+        open={loginOpen}
+        onOpenChange={handleLoginOpenChange}
+        locale={locale}
+      />
     </header>
   );
 }

@@ -17,6 +17,9 @@ export const Route = createFileRoute('/login')({
         to: session.user.role === 'admin' ? '/admin' : '/dashboard',
       });
     }
+    throw redirect({
+      to: '/?login=true',
+    });
   },
   head: () => ({
     meta: [

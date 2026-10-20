@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router';
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
+import { TawkChat } from '@/components/shared/tawk-chat';
 import { websiteConfig } from '@/config/website';
 import {
   type AppLocale,
@@ -125,6 +126,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
         */}
         {children}
+        <TawkChat embedUrl={websiteConfig.tawkChat.embedUrl} />
         <Scripts />
       </body>
     </html>

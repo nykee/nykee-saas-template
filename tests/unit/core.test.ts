@@ -22,6 +22,7 @@ describe('TanStarter Cloud core contracts', () => {
       'https://github.com/MkFastHQ/mkfast-lite'
     );
     expect(websiteConfig.supportEmail).toBe('support@xx.com');
+    expect(websiteConfig.tawkChat.embedUrl).toContain('https://embed.tawk.to/');
     expect(websiteConfig.themeStorageKey).toBeTruthy();
     expect(websiteConfig.manifest.startUrl).toBe('/');
   });

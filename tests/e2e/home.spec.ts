@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('simple landing page', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('https://embed.tawk.to/**', (route) => route.abort());
+  });
+
   test('renders English and localized SEO', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');

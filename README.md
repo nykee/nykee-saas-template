@@ -114,6 +114,17 @@ The default payment provider is [Pancake](https://pancake.waffo.ai/). The server
 
 The browser cannot submit a product ID, amount, merchant ID, or private key. Update the server variables when each product is deployed. Register `/api/webhooks/pancake` in the Pancake dashboard for both test and production environments as appropriate.
 
+## Live support
+
+The shared document mounts one tawk.to chat widget after React hydration.
+Its public embed address is configured in `src/config/website.ts` under
+`tawkChat.embedUrl`; no API key or server-side SDK is required. The widget
+loads asynchronously and stays mounted during client-side route changes.
+The integration does not set a signed-in user's name or email on the widget.
+
+Manage the widget's appearance, language, availability, and support agents in
+the tawk.to dashboard.
+
 ## Routes
 
 - `/` — English public landing page
