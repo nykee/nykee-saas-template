@@ -25,6 +25,10 @@ Site build with this template:
 
 ## Quick start
 
+Use Node.js 22.13 or newer and the pnpm version declared in `package.json`.
+The database checks use Node's built-in SQLite engine to execute the committed
+migrations without contacting Cloudflare.
+
 ```bash
 pnpm install
 cp .env.example .env
@@ -32,7 +36,7 @@ cp .dev.vars.example .dev.vars
 pnpm dev
 ```
 
-Set `VITE_GOOGLE_CLIENT_ID` in `.env`. Set the matching server credentials and Pancake values in `.dev.vars`. The local app runs at `http://localhost:3000`.
+Set `VITE_GOOGLE_CLIENT_ID` in `.env`. Set the matching server credentials and Pancake values in `.dev.vars`. `pnpm dev` applies pending local D1 migrations before starting Vite. The local app runs at `http://127.0.0.1:3000`.
 
 ## Cloudflare resources
 
@@ -46,9 +50,10 @@ pnpm exec wrangler queues create nykee-saas-template-events
 pnpm exec wrangler queues create nykee-saas-template-events-dlq
 ```
 
-Copy the returned D1 `database_id` and KV `id` into `wrangler.jsonc`. Keep `workers_dev: true` as the committed deployment default. Durable Objects, Workers AI, Analytics Engine, and the Queue consumer are declared in the same file and do not require an account ID in the repository.
+Copy the returned D1 `database_id` and KV `id` into `wrangler.jsonc`. Set the resource names to match the resources you created, including D1's `database_name`; keep its `binding` as `DB`. Migration commands use this binding so renaming a project does not leave them pointing at the original template database. Keep `workers_dev: true` as the committed deployment default. Durable Objects, Workers AI, Analytics Engine, and the Queue consumer are declared in the same file and do not require an account ID in the repository.
 
-Apply the Better Auth and application schema before the first authenticated request:
+Development and deployment apply the Better Auth and application migrations
+automatically. To apply migrations independently, choose the matching target:
 
 ```bash
 pnpm db:migrate:local
@@ -57,12 +62,47 @@ pnpm db:migrate:remote
 
 Use only the command matching the target database. `db:migrate:remote` requires Wrangler authentication and updates the configured remote D1 database.
 
+`pnpm deploy` checks the database contract, builds the app, applies pending
+remote migrations, and then deploys the Worker. A failed check, build, or
+migration stops the command before the new Worker is uploaded. Projects using
+Cloudflare's Git integration should set their deploy command to `pnpm deploy`;
+calling `wrangler deploy` directly skips these checks and migrations.
+
+### Better Auth schema changes
+
+Keep `src/lib/server/auth-options.ts`, `src/db/schema.ts`, and the SQL migrations
+in sync when upgrading Better Auth or adding plugins. Run `pnpm db:generate`
+after schema changes and commit both the SQL and Drizzle metadata. Review
+generated migrations for populated databases: adding a required column needs
+an explicit, correct backfill before its constraint can be enforced.
+`pnpm db:check` validates the installed Better Auth core/plugin fields and
+identity constraints, then applies every committed migration to SQLite and
+compares all application tables and indexes with Drizzle. It runs during both
+`pnpm check` and `pnpm build`.
+
+Better Auth 1.7 requires `account.issuer` and a unique index on
+`(issuer, account_id)`. Migration `0002_better_auth_account_issuer.sql` preserves
+existing Google accounts and credentials, fills their canonical issuer
+`https://accounts.google.com`, and creates the previously missing `blog_post`
+table. It supports both fresh databases and databases with migrations `0000`
+and `0001` already applied. It rejects unknown providers before replacing the
+account table; projects that added providers must add their verified issuer
+mappings before applying this migration. It does not guess an issuer or set
+a default for future accounts.
+
+For an existing project derived from an earlier template, merge the auth
+configuration, schema, and command changes. Generate a migration against that
+project's own Drizzle history and incorporate the verified issuer backfill;
+copying the template's migration journal over a customized project can lose
+its migration history. Apply the migration to its configured D1 database
+before deploying the updated Worker.
+
 After signing in once, promote the first administrator directly in D1. This
 is intentionally an explicit deployment step so a fresh template cannot
 silently grant administrative access to an arbitrary account:
 
 ```bash
-pnpm exec wrangler d1 execute nykee-saas-template-db --remote --command "UPDATE user SET role = 'admin', updated_at = unixepoch() * 1000 WHERE email = 'you@example.com';"
+pnpm exec wrangler d1 execute DB --remote --command "UPDATE user SET role = 'admin', updated_at = unixepoch() * 1000 WHERE email = 'you@example.com';"
 ```
 
 Replace the email and use `--local` when promoting a local development user.
@@ -194,17 +234,18 @@ belongs to one.
 
 | Command | Description |
 | --- | --- |
-| `pnpm dev` | Start the Vite development server |
+| `pnpm dev` | Apply local D1 migrations and start the Vite development server |
 | `pnpm check` | Run Biome, locale parity, tests, and TypeScript |
-| `pnpm build` | Build client/Worker output and type-check |
+| `pnpm build` | Check the database contract, build client/Worker output, and type-check |
 | `pnpm e2e` | Run Playwright acceptance tests |
 | `pnpm locale:compile` | Regenerate Paraglide output after copy changes |
 | `pnpm locale:check` | Check English/Spanish/French message-key parity |
 | `pnpm db:generate` | Generate a D1 migration from `src/db/schema.ts` |
+| `pnpm db:check` | Validate Better Auth fields, identity constraints, and the full SQL migration chain |
 | `pnpm db:migrate:local` | Apply migrations to local D1 |
 | `pnpm db:migrate:remote` | Apply migrations to remote D1 |
 | `pnpm cf-typegen` | Regenerate `worker-configuration.d.ts` |
-| `pnpm deploy` | Build and deploy to the committed workers.dev default |
+| `pnpm deploy` | Check/build, apply remote D1 migrations, and deploy to workers.dev |
 
 ## Customize
 

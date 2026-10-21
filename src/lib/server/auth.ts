@@ -1,8 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { admin, oneTap } from 'better-auth/plugins';
-import { tanstackStartCookies } from 'better-auth/tanstack-start';
 import { databaseSchema } from '@/db/schema';
+import { createAuthOptions } from './auth-options';
 import {
   getCoordinator,
   requiredBinding,
@@ -25,21 +24,17 @@ export function getAuth() {
   const googleClientSecret = requiredEnv('GOOGLE_CLIENT_SECRET');
 
   return betterAuth({
+    ...createAuthOptions({
+      authUrl,
+      secret: requiredEnv('BETTER_AUTH_SECRET'),
+      googleClientId,
+      googleClientSecret,
+    }),
     database: drizzleAdapter(getDatabase(), {
       provider: 'sqlite',
       schema: databaseSchema,
       transaction: false,
     }),
-    baseURL: authUrl,
-    basePath: '/api/auth',
-    secret: requiredEnv('BETTER_AUTH_SECRET'),
-    trustedOrigins: [authUrl],
-    socialProviders: {
-      google: {
-        clientId: googleClientId,
-        clientSecret: googleClientSecret,
-      },
-    },
     secondaryStorage: {
       /** Read a Better Auth session from the configured KV namespace. */
       get: async (key) => cache.get(key),
@@ -87,19 +82,6 @@ export function getAuth() {
         }
         const result = (await response.json()) as { value: number };
         return result.value;
-      },
-    },
-    plugins: [
-      /** Adds role and ban fields plus protected administrative endpoints. */
-      admin({ defaultRole: 'user', adminRoles: ['admin'] }),
-      /** Verifies Google One Tap ID tokens before issuing a Better Auth session. */
-      oneTap({ clientId: googleClientId }),
-      /** Must remain the final plugin so TanStack Start receives Set-Cookie. */
-      tanstackStartCookies(),
-    ],
-    advanced: {
-      database: {
-        generateId: 'uuid',
       },
     },
   });

@@ -57,6 +57,10 @@ export const account = sqliteTable(
   'account',
   {
     id: text('id').primaryKey(),
+    // Since Better Auth 1.7, the issuer and provider-side subject identify an
+    // account together. providerId selects the configured login integration;
+    // it is no longer the namespace used to distinguish account identities.
+    issuer: text('issuer').notNull(),
     accountId: text('account_id').notNull(),
     providerId: text('provider_id').notNull(),
     userId: text('user_id')
@@ -78,8 +82,8 @@ export const account = sqliteTable(
   },
   (table) => [
     index('account_user_id_idx').on(table.userId),
-    uniqueIndex('account_provider_account_unique').on(
-      table.providerId,
+    uniqueIndex('account_issuer_account_unique').on(
+      table.issuer,
       table.accountId
     ),
   ]

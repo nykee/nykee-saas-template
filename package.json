@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "packageManager": "pnpm@10.30.3",
   "scripts": {
-    "dev": "vite dev --host 127.0.0.1 --port 3000 --strictPort",
-    "build": "vite build && tsc --noEmit",
+    "dev": "pnpm db:migrate:local && vite dev --host 127.0.0.1 --port 3000 --strictPort",
+    "build": "pnpm db:check && vite build && tsc --noEmit",
     "preview": "vite preview",
-    "deploy": "pnpm run build && wrangler deploy",
+    "deploy": "pnpm run build && pnpm db:migrate:remote && wrangler deploy",
     "check": "biome check . && pnpm locale:check && vitest run && tsc --noEmit",
     "lint": "biome check --write .",
     "format": "biome format --write .",
@@ -18,8 +21,9 @@
     "locale:check": "tsx scripts/check-locale-keys.ts",
     "locale:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/locale/paraglide --emit-ts-declarations",
     "db:generate": "drizzle-kit generate",
-    "db:migrate:local": "wrangler d1 migrations apply tanstarter-cloud-db --local",
-    "db:migrate:remote": "wrangler d1 migrations apply tanstarter-cloud-db --remote",
+    "db:check": "vitest run tests/unit/database.test.ts",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "cf-typegen": "wrangler types --env-interface Env",
     "postinstall": "pnpm locale:compile && pnpm cf-typegen"
   },
